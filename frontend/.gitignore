@@ -1,0 +1,18 @@
+# Ignore Python cache files and directories
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore environment files if using virtualenv inside the frontend directory
+.env/
+*.env
+
+# Node.js dependencies (if applicable)
+node_modules/
+
+# Ignore log files
+*.log
+
+# Ignore coverage or test result files
+coverage/
+*.coverage
