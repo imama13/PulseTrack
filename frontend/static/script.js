@@ -1,6 +1,8 @@
 // DOM elements
 const heartbeatElem = document.getElementById("heartbeat");
 const oxygenElem = document.getElementById("oxygen");
+const alertElement = document.getElementById("alert");
+const alertSound = document.getElementById("alertSound");
 
 // Variables for the map
 let map, marker;
@@ -33,16 +35,46 @@ async function fetchSensorData() {
         const response = await fetch('/get_sensor_data');
         const data = await response.json();
         console.log("Received Data:", data);
+        let bpm = parseInt(data.heartbeat);
+        let oxy = parseInt(data.oxygen);
+
         // Update UI elements with received data
         document.getElementById("heartbeat").textContent = `${data.heartbeat}`;
         document.getElementById("oxygen").textContent = `${data.oxygen}`;
+
         // Add data to chart
         const chart = Chart.getChart("statsChart");
+
+        // Add new data
         chart.data.labels.push(new Date().toLocaleTimeString());
         chart.data.datasets[0].data.push(data.heartbeat);
         chart.data.datasets[1].data.push(data.oxygen);
+        
         chart.update();
+        // Maintain a sliding window of 12 values
+        if (chart.data.labels.length > 12) {
+            chart.data.labels.shift(); // Remove the oldest label
+            chart.data.datasets[0].data.shift(); // Remove the oldest heartbeat value
+            chart.data.datasets[1].data.shift(); // Remove the oldest oxygen value
+        }
+        
+        // Update map location
         updateMap(data.gps.latitude, data.gps.longitude);
+
+        // Trigger alerts for critical values
+        if (bpm < 60 || bpm > 150 || oxy < 85) {
+            alertElement.classList.remove("hidden");
+            // Play the alert sound
+            if (alertSound.paused) {
+                alertSound.play().catch((err) => console.error("Audio playback failed:", err));
+            }
+        } else {
+            alertElement.classList.add("hidden");
+
+            // Stop the sound if the alert is dismissed
+            alertSound.pause();
+            alertSound.currentTime = 0; // Reset playback position
+        }
     } catch (error) {
         console.error("Error fetching sensor data:", error);
     }
@@ -88,6 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
         },
     });
 
+    fetchSensorData();
     // Fetch sensor data every 5 seconds
     setInterval(fetchSensorData, 5000);
 });
