@@ -1,31 +1,36 @@
-from flask import Flask, render_template, jsonify
-from flask_socketio import SocketIO
-import random
-import time
+from flask import Flask, render_template, jsonify, request
+from flask_cors import CORS
 
 app = Flask(__name__)
-socketio = SocketIO(app)
+CORS(app)
 
-# Simulate real-time sensor data
-@socketio.on('connect')
-def handle_connection():
-    while True:
-        # Simulate sensor data
-        heartbeat = random.randint(60, 100)  # Example value  replace with requests!!!!!!!!!!!!!!!!!!
-        oxygen = random.randint(90, 100)    # Example value
-        gps_coords = {"latitude": 37.7749, "longitude": -122.4194}  # Example coords
-        
-        # Emit data to frontend
-        socketio.emit('update_stats', {
-            "heartbeat": heartbeat,
-            "oxygen": oxygen,
-            "gps": gps_coords,
-        })
-        time.sleep(5)
+# Global variables to store sensor data
+sensor_data = {
+    "heartbeat": 0,
+    "oxygen": 0,
+    "gps": {"latitude": 0.0, "longitude": 0.0},
+}
+
+# Endpoint to receive data from the microcontroller
+@app.route('/post_sensor_data', methods=['POST'])
+def post_sensor_data():
+    global sensor_data
+    data = request.json  # Expect JSON data from the microcontroller
+    if data:
+        sensor_data["heartbeat"] = data.get("heartbeat", 0)
+        sensor_data["oxygen"] = data.get("oxygen", 0)
+        sensor_data["gps"] = data.get("gps", {"latitude": 0.0, "longitude": 0.0})
+        return jsonify({"status": "success", "message": "Data received successfully!"}), 200
+    return jsonify({"status": "error", "message": "Invalid data"}), 400
+
+# Endpoint to provide data to the frontend
+@app.route('/get_sensor_data', methods=['GET'])
+def get_sensor_data():
+    return jsonify(sensor_data)
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    app.run(debug=True, port=5001)
