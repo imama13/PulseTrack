@@ -1,9 +1,3 @@
-// DOM elements
-const heartbeatElem = document.getElementById("heartbeat");
-const oxygenElem = document.getElementById("oxygen");
-const alertElement = document.getElementById("alert");
-const alertSound = document.getElementById("alertSound");
-
 // Variables for the map
 let map, marker;
 
@@ -22,16 +16,23 @@ function initMap(lat, lng) {
 // Function to update the map location
 function updateMap(lat, lng) {
     // Update the map's center
-    map.setView([lat, lng]);
+    if (map) {
+        map.setView([lat, lng]);
 
-    // Update the marker's position
-    if (marker) {
-        marker.setLatLng([lat, lng]);
+        // Update the marker's position
+        if (marker) {
+            marker.setLatLng([lat, lng]);
+        }
     }
 }
 
 async function fetchSensorData() {
     try {
+        // DOM elements
+        const heartbeatElem = document.getElementById("heartbeat");
+        const oxygenElem = document.getElementById("oxygen");
+        const alertElement = document.getElementById("alert");
+        const alertSound = document.getElementById("alertSound");
         const response = await fetch('/get_sensor_data');
         const data = await response.json();
         console.log("Received Data:", data);
@@ -44,36 +45,40 @@ async function fetchSensorData() {
 
         // Add data to chart
         const chart = Chart.getChart("statsChart");
+        if (chart) {
+            // Add new data
+            chart.data.labels.push(new Date().toLocaleTimeString());
+            chart.data.datasets[0].data.push(data.heartbeat);
+            chart.data.datasets[1].data.push(data.oxygen);
 
-        // Add new data
-        chart.data.labels.push(new Date().toLocaleTimeString());
-        chart.data.datasets[0].data.push(data.heartbeat);
-        chart.data.datasets[1].data.push(data.oxygen);
-        
-        chart.update();
-        // Maintain a sliding window of 12 values
-        if (chart.data.labels.length > 12) {
-            chart.data.labels.shift(); // Remove the oldest label
-            chart.data.datasets[0].data.shift(); // Remove the oldest heartbeat value
-            chart.data.datasets[1].data.shift(); // Remove the oldest oxygen value
+            chart.update();
+            // Maintain a sliding window of 12 values
+            if (chart.data.labels.length > 12) {
+                chart.data.labels.shift(); // Remove the oldest label
+                chart.data.datasets[0].data.shift(); // Remove the oldest heartbeat value
+                chart.data.datasets[1].data.shift(); // Remove the oldest oxygen value
+            }
         }
-        
+
         // Update map location
         updateMap(data.gps.latitude, data.gps.longitude);
 
         // Trigger alerts for critical values
         if (bpm < 60 || bpm > 150 || oxy < 85) {
-            alertElement.classList.remove("hidden");
-            // Play the alert sound
+            if (!alertElement.classList.contains("hidden")) {
+                alertElement.classList.remove("hidden");
+            }
             if (alertSound.paused) {
-                alertSound.play().catch((err) => console.error("Audio playback failed:", err));
+                try {
+                    alertSound.play();
+                } catch (error) {
+                    console.error("Audio playback failed:", error);
+                }
             }
         } else {
             alertElement.classList.add("hidden");
-
-            // Stop the sound if the alert is dismissed
             alertSound.pause();
-            alertSound.currentTime = 0; // Reset playback position
+            alertSound.currentTime = 0;
         }
     } catch (error) {
         console.error("Error fetching sensor data:", error);
@@ -82,7 +87,7 @@ async function fetchSensorData() {
 
 document.addEventListener("DOMContentLoaded", () => {
     // Initialize the map with default coordinates
-    initMap(33.642125, 72.991072); 
+    initMap(33.6440950, 72.9878090);
 
     // Initialize the chart
     const ctx = document.getElementById("statsChart").getContext("2d");
@@ -124,3 +129,5 @@ document.addEventListener("DOMContentLoaded", () => {
     // Fetch sensor data every 5 seconds
     setInterval(fetchSensorData, 5000);
 });
+
+module.exports = { fetchSensorData };

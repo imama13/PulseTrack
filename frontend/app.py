@@ -6,9 +6,9 @@ CORS(app)
 
 # Global variables to store sensor data
 sensor_data = {
-    "heartbeat": 0,
-    "oxygen": 0,
-    "gps": {"latitude": 0.0, "longitude": 0.0},
+    "heartbeat": 80,
+    "oxygen": 99,
+    "gps": {"latitude": 33.6440950, "longitude": 72.9878090},
 }
 
 # Endpoint to receive data from the microcontroller
