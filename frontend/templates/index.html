@@ -12,13 +12,15 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
+    <audio id="alertSound" src="static/alert.mp3" preload="auto"></audio>
+    <div id="alert" class="hidden">⚠️ Alert: Critical Health Parameters! ⚠️</div>
     <h1>Health Monitoring Dashboard</h1>
     <div>
         <p>Heartbeat: <span id="heartbeat">--</span> bpm</p>
         <p>Oxygen Level: <span id="oxygen">--</span>%</p>
     </div>
     <div>
-        <canvas id="statsChart" width="400" height="200"></canvas>
+        <canvas id="statsChart" width="600" height="200"></canvas>
     </div>
     <div id="map" style="height: 500px;"></div>
 
