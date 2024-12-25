@@ -42,10 +42,3 @@ canvas {
     display: block;
     margin: 20px auto;
 }
-
-/* Map container */
-#map {
-    margin: 20px auto;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-}

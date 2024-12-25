@@ -6,10 +6,11 @@
     <title>Health Monitor</title>
     <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.2.1/chart.min.js"></script>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="../static/style.css">
 
-    <!-- replace google maps key!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY"></script> 
+    <!-- To display open street maps (OSM) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
     <h1>Health Monitoring Dashboard</h1>
@@ -20,8 +21,8 @@
     <div>
         <canvas id="statsChart" width="400" height="200"></canvas>
     </div>
-    <div id="map" style="height: 400px; width: 100%;"></div>
+    <div id="map" style="height: 500px;"></div>
 
-    <script src="/static/script.js"></script>
+    <script src="../static/script.js" defer></script>
 </body>
 </html>
