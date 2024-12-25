@@ -65,15 +65,13 @@ async function fetchSensorData() {
 
         // Trigger alerts for critical values
         if (bpm < 60 || bpm > 150 || oxy < 85) {
-            if (!alertElement.classList.contains("hidden")) {
+            if (alertElement.classList.contains("hidden")) {
                 alertElement.classList.remove("hidden");
             }
-            if (alertSound.paused) {
-                try {
-                    alertSound.play();
-                } catch (error) {
-                    console.error("Audio playback failed:", error);
-                }
+            try {
+                alertSound.play();
+            } catch (error) {
+                console.error("Audio playback failed:", error);
             }
         } else {
             alertElement.classList.add("hidden");

@@ -119,7 +119,7 @@ describe('fetchSensorData', () => {
 
         // Assert that the alert is shown and sound plays
         expect(alertElement).not.toBeUndefined(); // Ensure the element exists
-        // expect(alertElement.classList.contains('hidden')).toBe(false); // Alert visible
+        expect(alertElement.classList.contains('hidden')).toBe(false); // Alert visible
         expect(mockAlertSound.play).toHaveBeenCalled(); // Alert sound played
 
         // Prepare mock data for the next update
@@ -151,4 +151,3 @@ describe('fetchSensorData', () => {
         );
     });
 });
-    
