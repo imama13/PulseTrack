@@ -7,9 +7,18 @@ import time
 app = Flask(__name__)
 socketio = SocketIO(app)
 
+<<<<<<< Updated upstream
 # Thread control
 thread = None
 thread_stop_event = Event()
+=======
+# Global variables to store sensor data
+sensor_data = {
+    "heartbeat": 88,
+    "oxygen": 91,
+    "gps": {"latitude": 33.6440950, "longitude": 72.9878090},
+}
+>>>>>>> Stashed changes
 
 # Background task to simulate data emission
 def emit_data():
